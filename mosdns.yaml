@@ -1,0 +1,85 @@
+log:
+  level: 'error'
+
+plugins:
+  - tag: 'ecs_auto'
+    type: 'ecs'
+    args:
+      auto: true
+      mask4: 24
+      mask6: 48
+      force_overwrite: false
+  - tag: 'cache_default'
+    type: 'cache'
+    args:
+      size: 1048576
+      cache_everything: true
+  - tag: 'forward_default'
+    type: 'fast_forward'
+    args:
+      upstream:
+        - addr: 'tls://8.8.4.4:853'
+          trusted: true
+          max_conns: 4
+          enable_pipeline: true
+        - addr: 'tls://8.8.8.8:853'
+          trusted: true
+          max_conns: 4
+          enable_pipeline: true
+        - addr: 'tls://[2001:4860:4860:0000:0000:0000:0000:8844]:853'
+          trusted: true
+          max_conns: 4
+          enable_pipeline: true
+        - addr: 'tls://[2001:4860:4860:0000:0000:0000:0000:8888]:853'
+          trusted: true
+          max_conns: 4
+          enable_pipeline: true
+  - tag: 'query_from_local'
+    type: 'query_matcher'
+    args:
+      client_ip:
+        - '0.0.0.0/8'
+        - '10.0.0.0/8'
+        - '100.64.0.0/10'
+        - '127.0.0.0/8'
+        - '169.254.0.0/16'
+        - '172.16.0.0/12'
+        - '192.0.0.0/24'
+        - '192.0.2.0/24'
+        - '192.88.99.0/24'
+        - '192.168.0.0/16'
+        - '198.18.0.0/15'
+        - '198.51.100.0/24'
+        - '203.0.113.0/24'
+        - '224.0.0.0/4'
+        - '233.252.0.0/24'
+        - '240.0.0.0/4'
+        - '255.255.255.255/32'
+        - '::/128'
+        - '::1/128'
+        - 'fc00::/7'
+        - 'fe80::/10'
+        - 'ff00::/8'
+  - tag: 'default'
+    type: 'sequence'
+    args:
+      exec:
+        - '_reject_any'
+        - '_edns0_filter_ecs_only'
+        - if: '!query_from_local'
+          exec:
+            - 'ecs_auto'
+        - 'cache_default'
+        - 'forward_default'
+
+servers:
+  - exec: 'default'
+    timeout: 3
+    listeners:
+      - addr: ':64053'
+        protocol: 'udp'
+      - addr: ':64053'
+        protocol: 'tcp'
+      - addr: ':64080'
+        protocol: 'http'
+        get_user_ip_from_header: 'X-Real-IP'
