@@ -14,7 +14,7 @@ plugins:
     args:
       size: 1048576
       cache_everything: true
-  - tag: 'forward_default'
+  - tag: 'proxy_default'
     type: 'fast_forward'
     args:
       upstream:
@@ -34,7 +34,7 @@ plugins:
           trusted: true
           max_conns: 4
           enable_pipeline: true
-  - tag: 'query_from_local'
+  - tag: 'query_is_local'
     type: 'query_matcher'
     args:
       client_ip:
@@ -60,17 +60,27 @@ plugins:
         - 'fc00::/7'
         - 'fe80::/10'
         - 'ff00::/8'
+  - tag: 'query_is_ecsable'
+    type: 'query_matcher'
+    args:
+      qtype:
+        - 1
+        - 5
+        - 28
+        - 65
   - tag: 'default'
     type: 'sequence'
     args:
       exec:
         - '_reject_any'
         - '_edns0_filter_ecs_only'
-        - if: '!query_from_local'
+        - if: '!query_is_local'
           exec:
-            - 'ecs_auto'
+            - if: '!query_is_ecsable'
+              exec:
+                - '_edns0_filter_no_edns0'
         - 'cache_default'
-        - 'forward_default'
+        - 'proxy_default'
 
 servers:
   - exec: 'default'
