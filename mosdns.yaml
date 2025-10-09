@@ -13,33 +13,8 @@ plugins:
     type: 'cache'
     args:
       size: 262144
-      cache_everything: false
-  - tag: 'cache_ecsable'
-    type: 'cache'
-    args:
-      size: 262144
       cache_everything: true
   - tag: 'proxy_default'
-    type: 'fast_forward'
-    args:
-      upstream:
-        - addr: 'tls://1.0.0.1:853'
-          trusted: true
-          max_conns: 4
-          enable_pipeline: true
-        - addr: 'tls://1.1.1.1:853'
-          trusted: true
-          max_conns: 4
-          enable_pipeline: true
-        - addr: 'tls://[2606:4700:4700:0000:0000:0000:0000:1001]:853'
-          trusted: true
-          max_conns: 4
-          enable_pipeline: true
-        - addr: 'tls://[2606:4700:4700:0000:0000:0000:0000:1111]:853'
-          trusted: true
-          max_conns: 4
-          enable_pipeline: true
-  - tag: 'proxy_ecsable'
     type: 'fast_forward'
     args:
       upstream:
@@ -85,14 +60,6 @@ plugins:
         - 'fc00::/7'
         - 'fe80::/10'
         - 'ff00::/8'
-  - tag: 'query_is_ecsable'
-    type: 'query_matcher'
-    args:
-      qtype:
-        - 1
-        - 5
-        - 28
-        - 65
   - tag: 'default'
     type: 'sequence'
     args:
@@ -102,14 +69,8 @@ plugins:
         - if: '!query_is_local'
           exec:
             - 'ecs_auto'
-        - if: '!query_is_ecsable'
-          exec:
-            - '_edns0_filter_no_edns0'
-            - 'cache_default'
-            - 'proxy_default'
-            - '_return'
-        - 'cache_ecsable'
-        - 'proxy_ecsable'
+        - 'cache_default'
+        - 'proxy_default'
 
 servers:
   - exec: 'default'
