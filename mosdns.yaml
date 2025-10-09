@@ -60,6 +60,14 @@ plugins:
         - 'fc00::/7'
         - 'fe80::/10'
         - 'ff00::/8'
+  - tag: 'query_is_ecsable'
+    type: 'query_matcher'
+    args:
+      qtype:
+        - 1
+        - 5
+        - 28
+        - 65
   - tag: 'default'
     type: 'sequence'
     args:
@@ -68,7 +76,11 @@ plugins:
         - '_edns0_filter_ecs_only'
         - if: '!query_is_local'
           exec:
-            - 'ecs_auto'
+            - if: '!query_is_ecsable'
+              exec:
+                - '_edns0_filter_no_edns0'
+              else_exec:
+                - 'ecs_auto'
         - 'cache_default'
         - 'proxy_default'
 
