@@ -76,6 +76,7 @@ plugins:
     type: 'sequence'
     args:
       exec:
+        - '_misc_optm'
         - '_reject_any'
         - '_edns0_filter_ecs_only'
         - if: '!query_is_local'
