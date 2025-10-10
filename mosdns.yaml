@@ -9,6 +9,10 @@ plugins:
       mask4: 24
       mask6: 48
       force_overwrite: false
+  - tag: 'ttl_clamp'
+    type: 'ttl'
+    args:
+      maximum_ttl: 86400
   - tag: 'cache_default'
     type: 'cache'
     args:
@@ -83,6 +87,7 @@ plugins:
                 - 'ecs_auto'
         - 'cache_default'
         - 'proxy_default'
+        - 'ttl_clamp'
 
 servers:
   - exec: 'default'
