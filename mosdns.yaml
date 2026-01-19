@@ -22,22 +22,14 @@ plugins:
     type: 'fast_forward'
     args:
       upstream:
-        - addr: 'tls://8.8.4.4:853'
+        - addr: 'https://8.8.4.4:443/dns-query'
           trusted: true
-          max_conns: 4
-          enable_pipeline: true
-        - addr: 'tls://8.8.8.8:853'
+        - addr: 'https://8.8.8.8:443/dns-query'
           trusted: true
-          max_conns: 4
-          enable_pipeline: true
-        - addr: 'tls://[2001:4860:4860:0000:0000:0000:0000:8844]:853'
+        - addr: 'https://[2001:4860:4860:0000:0000:0000:0000:8844]:443/dns-query'
           trusted: true
-          max_conns: 4
-          enable_pipeline: true
-        - addr: 'tls://[2001:4860:4860:0000:0000:0000:0000:8888]:853'
+        - addr: 'https://[2001:4860:4860:0000:0000:0000:0000:8888]:443/dns-query'
           trusted: true
-          max_conns: 4
-          enable_pipeline: true
   - tag: 'query_is_local'
     type: 'query_matcher'
     args:
@@ -94,10 +86,10 @@ servers:
   - exec: 'default'
     timeout: 3
     listeners:
-      - addr: ':64053'
+      - addr: '127.0.0.1:64053'
         protocol: 'udp'
-      - addr: ':64053'
+      - addr: '127.0.0.1:64053'
         protocol: 'tcp'
-      - addr: ':64080'
+      - addr: '127.0.0.1:64080'
         protocol: 'http'
         get_user_ip_from_header: 'X-Real-IP'
