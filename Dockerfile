@@ -10,6 +10,9 @@ FROM alpine:latest
 COPY --from=0 /usr/bin/mosdns /usr/bin/mosdns
 
 RUN apk add --no-cache ca-certificates bash
+ADD ads.list /etc/mosdns/ads.list
+ADD chinadns.list /etc/mosdns/chinadns.list
+ADD otherdns.list /etc/mosdns/otherdns.list
 ADD mosdns.yaml /etc/mosdns/mosdns.yaml
 ADD docker-entrypoint.sh /usr/bin/docker-entrypoint.sh
 
